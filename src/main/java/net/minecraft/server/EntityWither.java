@@ -8,6 +8,7 @@ import org.bukkit.craftbukkit.event.CraftEventFactory;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Wither.WitherHead;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
+import org.bukkit.event.entity.EntityTargetEvent.TargetReason;
 import org.bukkit.event.entity.ExplosionPrimeEvent;
 import org.bukkit.event.entity.WitherHeadTargetEvent;
 // CraftBukkit end
@@ -233,7 +234,7 @@ public class EntityWither extends EntityMonster implements IRangedEntity {
                             this.bt[i - 1] = this.ticksLived + 40 + this.random.nextInt(20);
                             this.bu[i - 1] = 0;
                         } else {
-                            this.b(i, null); // CraftBukkit
+                            this.b(i, null, TargetReason.TARGET_DIED); // CraftBukkit
                         }
                     } else {
                         List list = this.world.a(EntityLiving.class, this.boundingBox.grow(20.0D, 8.0D, 20.0D), bw);
@@ -244,10 +245,10 @@ public class EntityWither extends EntityMonster implements IRangedEntity {
                             if (entityliving != this && entityliving.isAlive() && this.hasLineOfSight(entityliving)) {
                                 if (entityliving instanceof EntityHuman) {
                                     if (!((EntityHuman) entityliving).abilities.isInvulnerable) {
-                                        this.b(i, entityliving); // CraftBukkit
+                                        this.b(i, entityliving, TargetReason.RANDOM_TARGET); // CraftBukkit
                                     }
                                 } else {
-                                    this.b(i, entityliving); // CraftBukkit
+                                    this.b(i, entityliving, TargetReason.RANDOM_TARGET); // CraftBukkit
                                 }
                                 break;
                             }
@@ -259,9 +260,9 @@ public class EntityWither extends EntityMonster implements IRangedEntity {
             }
 
             if (this.getGoalTarget() != null) {
-                this.b(0, this.getGoalTarget()); // CraftBukkit
+                this.b(0, this.getGoalTarget(), TargetReason.WITHER_TARGET); // CraftBukkit
             } else {
-                this.b(0, null); // CraftBukkit
+                this.b(0, null, TargetReason.FORGOT_TARGET); // CraftBukkit
             }
 
             if (this.bv > 0) {
@@ -479,8 +480,8 @@ public class EntityWither extends EntityMonster implements IRangedEntity {
     }
 
     // CraftBukkit start
-    public void b(int i, EntityLiving entityliving) {
-        WitherHeadTargetEvent event = new WitherHeadTargetEvent(this.getBukkitEntity(), entityliving != null ? (LivingEntity) entityliving.getBukkitEntity() : null, (i == 1 ? WitherHead.LEFT : i == 2 ? WitherHead.RIGHT : WitherHead.CENTER));
+    public void b(int i, EntityLiving entityliving, TargetReason reason) {
+        WitherHeadTargetEvent event = new WitherHeadTargetEvent(this.getBukkitEntity(), entityliving != null ? (LivingEntity) entityliving.getBukkitEntity() : null, reason, (i == 1 ? WitherHead.LEFT : i == 2 ? WitherHead.RIGHT : WitherHead.CENTER));
         CraftEventFactory.callEvent(event);
 
         if (!event.isCancelled()) {
