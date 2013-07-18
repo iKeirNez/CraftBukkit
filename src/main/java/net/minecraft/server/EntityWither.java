@@ -234,7 +234,7 @@ public class EntityWither extends EntityMonster implements IRangedEntity {
                             this.bt[i - 1] = this.ticksLived + 40 + this.random.nextInt(20);
                             this.bu[i - 1] = 0;
                         } else {
-                            this.b(i, null, TargetReason.TARGET_DIED); // CraftBukkit
+                            this.b(i, null, entity != null && !entity.isAlive() ? TargetReason.TARGET_DIED : TargetReason.FORGOT_TARGET); // CraftBukkit
                         }
                     } else {
                         List list = this.world.a(EntityLiving.class, this.boundingBox.grow(20.0D, 8.0D, 20.0D), bw);
@@ -262,7 +262,13 @@ public class EntityWither extends EntityMonster implements IRangedEntity {
             if (this.getGoalTarget() != null) {
                 this.b(0, this.getGoalTarget(), TargetReason.WITHER_TARGET); // CraftBukkit
             } else {
-                this.b(0, null, TargetReason.FORGOT_TARGET); // CraftBukkit
+                // CraftBukkit start - Only call change when it is changing
+                int k = this.t(0);
+                if (k > 0) {
+                    Entity entity = this.world.getEntity(k);
+                    this.b(0, null, entity != null && !entity.isAlive() ? TargetReason.TARGET_DIED : TargetReason.FORGOT_TARGET);
+                }
+                // CraftBukkit end
             }
 
             if (this.bv > 0) {
