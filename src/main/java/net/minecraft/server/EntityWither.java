@@ -483,8 +483,8 @@ public class EntityWither extends EntityMonster implements IRangedEntity {
         WitherHeadTargetEvent event = new WitherHeadTargetEvent(this.getBukkitEntity(), entityliving != null ? (LivingEntity) entityliving.getBukkitEntity() : null, (i == 1 ? WitherHead.LEFT : i == 2 ? WitherHead.RIGHT : WitherHead.CENTER));
         CraftEventFactory.callEvent(event);
 
-        if (!event.isCancelled() && event.getTarget() != null) {
-            this.c(i, ((org.bukkit.craftbukkit.entity.CraftEntity) event.getTarget()).getHandle().id);
+        if (!event.isCancelled()) {
+            this.c(i, event.getTarget() != null ? ((org.bukkit.craftbukkit.entity.CraftEntity) event.getTarget()).getHandle().id : 0);
         }
     }
 
