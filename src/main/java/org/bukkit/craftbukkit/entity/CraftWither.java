@@ -35,18 +35,21 @@ public class CraftWither extends CraftMonster implements Wither {
 
     public void setTarget(WitherHead head, LivingEntity entity) {
         Validate.notNull(head, "Must select a WitherHead to set");
+        Validate.isTrue(getWorld().equals(entity.getWorld()), "Entity must be within the same world as wither");
         getHandle().setTarget(head, entity != null ? ((CraftLivingEntity) entity).getHandle() : null);
     }
 
     public void shoot(WitherHead head, LivingEntity entity) {
         Validate.notNull(head, "Must select a WitherHead to shoot from");
         Validate.notNull(entity, "Must select a valid entity to shoot");
+        Validate.isTrue(getWorld().equals(entity.getWorld()), "Entity must be within the same world as wither");
         getHandle().a((head == WitherHead.LEFT ? 2 : head == WitherHead.RIGHT ? 3 : 0), ((CraftLivingEntity) entity).getHandle());
     }
 
     public void shoot(WitherHead head, Location location) {
         Validate.notNull(head, "Must select a WitherHead to shoot from");
         Validate.notNull(location, "Must select a valid location to shoot at");
+        Validate.isTrue(getWorld().equals(location.getWorld()), "Location must be within the same world as wither");
         getHandle().a((head == WitherHead.LEFT ? 2 : head == WitherHead.RIGHT ? 3 : 0) + 1, location.getX(), location.getY(), location.getZ(), false);
     }
 }
