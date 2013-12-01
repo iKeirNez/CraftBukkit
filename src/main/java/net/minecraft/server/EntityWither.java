@@ -233,7 +233,7 @@ public class EntityWither extends EntityMonster implements IRangedEntity {
                             this.bt[i - 1] = this.ticksLived + 40 + this.random.nextInt(20);
                             this.bu[i - 1] = 0;
                         } else {
-                            this.b(i, null, entity != null && !entity.isAlive() ? TargetReason.TARGET_DIED : TargetReason.FORGOT_TARGET); // CraftBukkit
+                            this.target(i, null, entity != null && !entity.isAlive() ? TargetReason.TARGET_DIED : TargetReason.FORGOT_TARGET); // CraftBukkit
                         }
                     } else {
                         List list = this.world.a(EntityLiving.class, this.boundingBox.grow(20.0D, 8.0D, 20.0D), bw);
@@ -244,10 +244,10 @@ public class EntityWither extends EntityMonster implements IRangedEntity {
                             if (entityliving != this && entityliving.isAlive() && this.hasLineOfSight(entityliving)) {
                                 if (entityliving instanceof EntityHuman) {
                                     if (!((EntityHuman) entityliving).abilities.isInvulnerable) {
-                                        this.b(i, entityliving, TargetReason.RANDOM_TARGET); // CraftBukkit
+                                        this.target(i, entityliving, TargetReason.RANDOM_TARGET); // CraftBukkit
                                     }
                                 } else {
-                                    this.b(i, entityliving, TargetReason.RANDOM_TARGET); // CraftBukkit
+                                    this.target(i, entityliving, TargetReason.RANDOM_TARGET); // CraftBukkit
                                 }
                                 break;
                             }
@@ -259,13 +259,13 @@ public class EntityWither extends EntityMonster implements IRangedEntity {
             }
 
             if (this.getGoalTarget() != null) {
-                this.b(0, this.getGoalTarget(), TargetReason.WITHER_TARGET); // CraftBukkit
+                this.target(0, this.getGoalTarget(), TargetReason.WITHER_TARGET); // CraftBukkit
             } else {
                 // CraftBukkit start - Only call change when it is changing
                 int k = this.t(0);
                 if (k > 0) {
                     Entity entity = this.world.getEntity(k);
-                    this.b(0, null, entity != null && !entity.isAlive() ? TargetReason.TARGET_DIED : TargetReason.FORGOT_TARGET);
+                    this.target(0, null, entity != null && !entity.isAlive() ? TargetReason.TARGET_DIED : TargetReason.FORGOT_TARGET);
                 }
                 // CraftBukkit end
             }
@@ -485,17 +485,17 @@ public class EntityWither extends EntityMonster implements IRangedEntity {
     }
 
     // CraftBukkit start
-    public void b(int i, EntityLiving entityliving, TargetReason reason) {
+    public void target(int i, EntityLiving entityliving, TargetReason reason) {
         WitherHeadTargetEvent event = new WitherHeadTargetEvent(this.getBukkitEntity(), entityliving != null ? (org.bukkit.entity.LivingEntity) entityliving.getBukkitEntity() : null, reason, (i == 1 ? WitherHead.LEFT : i == 2 ? WitherHead.RIGHT : WitherHead.CENTER));
         CraftEventFactory.callEvent(event);
 
         if (!event.isCancelled()) {
-            this.c(i, event.getTarget() != null ? ((org.bukkit.craftbukkit.entity.CraftEntity) event.getTarget()).getHandle().id : 0);
+            this.b(i, event.getTarget() != null ? ((org.bukkit.craftbukkit.entity.CraftEntity) event.getTarget()).getHandle().id : 0);
         }
     }
 
     public EntityLiving getTarget(WitherHead head) {
-        int id = this.datawatcher.getInt(17 + (head == WitherHead.LEFT ? 1 : head == WitherHead.RIGHT ? 2 : 0));
+        int id = this.t(head == WitherHead.LEFT ? 1 : head == WitherHead.RIGHT ? 2 : 0);
         if (id == 0) {
             return null;
         }
@@ -507,7 +507,7 @@ public class EntityWither extends EntityMonster implements IRangedEntity {
     }
 
     public void setTarget(WitherHead head, EntityLiving entityliving) {
-        this.c((head == WitherHead.LEFT ? 1 : head == WitherHead.RIGHT ? 2 : 0), entityliving != null ? entityliving.id : 0);
+        this.b((head == WitherHead.LEFT ? 1 : head == WitherHead.RIGHT ? 2 : 0), entityliving != null ? entityliving.id : 0);
     }
     // CraftBukkit end
 }
