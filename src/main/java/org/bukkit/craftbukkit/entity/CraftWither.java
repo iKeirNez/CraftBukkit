@@ -8,6 +8,7 @@ import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Wither;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.WitherSkull;
 
 public class CraftWither extends CraftMonster implements Wither {
     public CraftWither(CraftServer server, EntityWither entity) {
@@ -28,28 +29,37 @@ public class CraftWither extends CraftMonster implements Wither {
         return EntityType.WITHER;
     }
 
+    @Override
     public LivingEntity getTarget(WitherHead head) {
         Validate.notNull(head, "Must select a WitherHead to check");
-        return getHandle().getTarget(head) != null ? (LivingEntity) getHandle().getTarget(head).getBukkitEntity() : null;
+        return getHandle().getHeadTarget(head) != null ? (LivingEntity) getHandle().getHeadTarget(head).getBukkitEntity() : null;
     }
 
+    @Override
+    public void setTarget(LivingEntity entity){
+        super.setTarget(entity);
+        Validate.isTrue(entity == null || getWorld().equals(entity.getWorld()), "Entity must be within the same world as wither");
+        getHandle().setAllHeadsTarget(entity != null ? ((CraftLivingEntity) entity).getHandle() : null);
+    }
+
+    @Override
     public void setTarget(WitherHead head, LivingEntity entity) {
         Validate.notNull(head, "Must select a WitherHead to set");
-        Validate.isTrue(getWorld().equals(entity.getWorld()), "Entity must be within the same world as wither");
-        getHandle().setTarget(head, entity != null ? ((CraftLivingEntity) entity).getHandle() : null);
+        Validate.isTrue(entity == null || getWorld().equals(entity.getWorld()), "Entity must be within the same world as wither");
+        getHandle().setHeadTarget(head.getId(), entity != null ? ((CraftLivingEntity) entity).getHandle() : null);
     }
 
-    public void shoot(WitherHead head, LivingEntity entity) {
+    public WitherSkull shoot(WitherHead head, LivingEntity entity) {
         Validate.notNull(head, "Must select a WitherHead to shoot from");
         Validate.notNull(entity, "Must select a valid entity to shoot");
         Validate.isTrue(getWorld().equals(entity.getWorld()), "Entity must be within the same world as wither");
-        getHandle().a((head == WitherHead.LEFT ? 2 : head == WitherHead.RIGHT ? 3 : 0), ((CraftLivingEntity) entity).getHandle());
+        return (CraftWitherSkull) getHandle().a((head == WitherHead.LEFT ? 2 : head == WitherHead.RIGHT ? 3 : 0), ((CraftLivingEntity) entity).getHandle()).getBukkitEntity();
     }
 
-    public void shoot(WitherHead head, Location location) {
+    public WitherSkull shoot(WitherHead head, Location location) {
         Validate.notNull(head, "Must select a WitherHead to shoot from");
         Validate.notNull(location, "Must select a valid location to shoot at");
         Validate.isTrue(getWorld().equals(location.getWorld()), "Location must be within the same world as wither");
-        getHandle().a((head == WitherHead.LEFT ? 2 : head == WitherHead.RIGHT ? 3 : 0) + 1, location.getX(), location.getY(), location.getZ(), false);
+        return (CraftWitherSkull) getHandle().a((head == WitherHead.LEFT ? 2 : head == WitherHead.RIGHT ? 3 : 0) + 1, location.getX(), location.getY(), location.getZ(), false).getBukkitEntity();
     }
 }
