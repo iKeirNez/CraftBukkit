@@ -233,7 +233,7 @@ public class EntityWither extends EntityMonster implements IRangedEntity {
                             this.bt[i - 1] = this.ticksLived + 40 + this.random.nextInt(20);
                             this.bu[i - 1] = 0;
                         } else {
-                            this.b(i, 0); // todo
+                            this.setHeadTarget(i, null, entity != null && !entity.isAlive() ? TargetReason.TARGET_DIED : TargetReason.FORGOT_TARGET); // CraftBukkit - call events
                         }
                     } else {
                         List list = this.world.a(EntityLiving.class, this.boundingBox.grow(20.0D, 8.0D, 20.0D), bw);
@@ -364,12 +364,12 @@ public class EntityWither extends EntityMonster implements IRangedEntity {
     }
 
     // CraftBukkit start
-    public EntityWitherSkull a(int i, EntityLiving entityliving) {
+    public EntityWitherSkull a(int i, EntityLiving entityliving) { // should be shoot(headId, target)
         return this.a(i, entityliving.locX, entityliving.locY + (double) entityliving.getHeadHeight() * 0.5D, entityliving.locZ, i == 0 && this.random.nextFloat() < 0.001F);
         // CraftBukkit end
     }
 
-    public EntityWitherSkull a(int i, double d0, double d1, double d2, boolean flag) { // CraftBukkit - private -> public, changed return type void -> EntityWitherSkill
+    public EntityWitherSkull a(int i, double d0, double d1, double d2, boolean flag) { // CraftBukkit - private -> public, changed return type void -> EntityWitherSkill, should be shoot(headId, x, y, z, charged)
         this.world.a((EntityHuman) null, 1014, (int) this.locX, (int) this.locY, (int) this.locZ, 0);
         double d3 = this.u(i);
         double d4 = this.v(i);
@@ -468,11 +468,11 @@ public class EntityWither extends EntityMonster implements IRangedEntity {
         this.datawatcher.watch(20, Integer.valueOf(i));
     }
 
-    public int t(int i) {
+    public int t(int i) { // should be getHeadTarget(headId)
         return this.datawatcher.getInt(17 + i);
     }
 
-    public void b(int i, int j) {
+    public void b(int i, int j) { // should be setHeadTarget(headId, targetId)
         this.datawatcher.watch(17 + i, Integer.valueOf(j));
     }
 
@@ -495,12 +495,6 @@ public class EntityWither extends EntityMonster implements IRangedEntity {
 
         if (!event.isCancelled()){
             this.b(headId, event.getTarget() != null ? event.getTarget().getEntityId() : 0);
-        }
-    }
-
-    public void setAllHeadTargets(EntityLiving entityLiving, TargetReason targetReason){
-        for (WitherHead witherHead : WitherHead.values()){
-            setHeadTarget(witherHead.getId(), entityLiving, targetReason);
         }
     }
 
