@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 
 // CraftBukkit start
+import org.bukkit.craftbukkit.entity.CraftWither;
 import org.bukkit.craftbukkit.event.CraftEventFactory;
 import org.bukkit.entity.Wither.WitherHead;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
@@ -490,11 +491,11 @@ public class EntityWither extends EntityMonster implements IRangedEntity {
 
     // CraftBukkit start
     public void setHeadTarget(int headId, EntityLiving entityLiving, TargetReason targetReason){ // sets withers head whilst also calling events
-        WitherHeadTargetEvent event = new WitherHeadTargetEvent(this.getBukkitEntity(), entityLiving != null ? (org.bukkit.entity.LivingEntity) entityLiving.getBukkitEntity() : null, targetReason, WitherHead.getWitherHead(headId));
+        WitherHeadTargetEvent event = new WitherHeadTargetEvent((CraftWither) this.getBukkitEntity(), entityLiving != null ? (org.bukkit.entity.LivingEntity) entityLiving.getBukkitEntity() : null, targetReason, WitherHead.getWitherHead(headId));
         CraftEventFactory.callEvent(event);
 
         if (!event.isCancelled()){
-            this.b(headId, event.getTarget() != null ? event.getTarget().getEntityId() : 0);
+            this.b(event.getWitherHead().getId(), event.getTarget() != null ? event.getTarget().getEntityId() : 0);
         }
     }
 
